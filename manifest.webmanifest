@@ -1,0 +1,9 @@
+{
+  "name": "Bigger By The Day Logbook",
+  "short_name": "BBTD",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#FAF7F2",
+  "description": "Workout logbook with lifting splits, EMOM, and HIIT interval clocks."
+}
