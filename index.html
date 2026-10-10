@@ -9,6 +9,7 @@
   <meta name="theme-color" content="#FAF7F2">
   <title>Bigger By The Day • Daily Logbook</title>
   <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="https://esm.sh/@glass-sdk/liquid-glass@0.0.2/dist/styles.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
   <script>
@@ -66,6 +67,29 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .tactile-btn { transition: all 0.12s cubic-bezier(0.2, 0, 0, 1); }
     .tactile-btn:active { transform: translateY(1.5px); }
+    body.lg-scene { height: 100dvh; overflow: hidden; --lg-foreground: #2E2724; }
+    .app-scroll { position: absolute; inset: 0; z-index: 1; overflow: auto; }
+    .glass-field {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 12% 8%, #f0a98a 0, transparent 34%),
+        radial-gradient(circle at 88% 16%, #8fc4aa 0, transparent 32%),
+        radial-gradient(circle at 78% 78%, #e8c56d 0, transparent 36%),
+        radial-gradient(circle at 8% 86%, #8eb4c6 0, transparent 34%),
+        radial-gradient(circle at 48% 46%, #f7d7c4 0, transparent 42%),
+        #f4ece3;
+    }
+    .glass-target {
+      background: rgba(255, 252, 248, 0.62) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    body[data-glass-ready="true"] .glass-target {
+      background: transparent !important;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
+    }
     .cozy-switch { position: relative; display: inline-block; width: 44px; height: 26px; }
     .cozy-switch input { opacity: 0; width: 0; height: 0; }
     .cozy-slider {
@@ -81,10 +105,14 @@
     input:checked + .cozy-slider:before { transform: translateX(18px); }
   </style>
 </head>
-<body class="bg-canvas text-ink font-sans min-h-screen pb-28 antialiased selection:bg-terracottaSoft selection:text-terracotta">
+<body class="lg-scene bg-canvas text-ink font-sans antialiased selection:bg-terracottaSoft selection:text-terracotta">
+  <div id="lg-content" class="lg-content" aria-hidden="true">
+    <div class="glass-field"></div>
+  </div>
+  <div id="app-scroll" class="app-scroll pb-28">
 
   <aside id="floating-rest-pill" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-xs transition-all duration-300 transform -translate-y-20 opacity-0 pointer-events-none">
-    <div class="bg-surface/95 backdrop-blur-md border border-borderWarm rounded-full px-4 py-2 shadow-floating flex items-center justify-between">
+    <div class="border border-white/50 rounded-full px-4 py-2 shadow-floating flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <span class="w-2 h-2 rounded-full bg-periwinkle animate-pulse"></span>
         <span class="text-xs font-medium text-inkMuted">Rest</span>
@@ -97,7 +125,7 @@
     </div>
   </aside>
 
-  <header class="sticky top-0 z-30 bg-canvas/90 backdrop-blur-md border-b border-borderWarm/70 safe-top px-4 pb-3">
+  <header class="sticky top-0 z-30 border-b border-white/40 safe-top px-4 pb-3">
     <div class="max-w-md mx-auto">
       <div class="flex items-center justify-between py-1">
         <button type="button" onclick="openProgramModal()" class="text-left">
@@ -417,7 +445,7 @@
     </section>
   </main>
 
-  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-canvas/90 backdrop-blur-md border-t border-borderWarm/80 safe-bottom px-4 pt-2">
+  <nav class="fixed bottom-0 left-0 right-0 z-40 border-t border-white/40 safe-bottom px-4 pt-2">
     <div class="max-w-md mx-auto grid grid-cols-4 gap-2 text-center">
       <button onclick="switchTab('workout')" id="nav-btn-workout" class="flex flex-col items-center py-1 text-terracotta transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
@@ -517,6 +545,8 @@
     </div>
   </div>
 
+  </div>
   <script src="./app.js"></script>
+  <script type="module" src="./glass.js"></script>
 </body>
 </html>

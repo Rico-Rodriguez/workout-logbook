@@ -919,7 +919,9 @@ function switchTab(tabId) {
       nav.classList.add('text-inkFaint');
     }
   });
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  const scroller = document.getElementById('app-scroll');
+  if (scroller) scroller.scrollTo({ top: 0, behavior: 'instant' });
+  else window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 function formatClock(sec) {
