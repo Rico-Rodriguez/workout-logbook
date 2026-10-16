@@ -1,0 +1,13 @@
+{
+  "appId": "com.rico.workoutlogbook",
+  "appName": "Workout Logbook",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#FAF7F2",
+    "scrollEnabled": true
+  },
+  "plugins": {
+    "StatusBar": { "style": "LIGHT", "overlaysWebView": true }
+  }
+}

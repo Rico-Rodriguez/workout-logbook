@@ -1,0 +1,92 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ios-build]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ios-ipa
+  cancel-in-progress: true
+
+jobs:
+  ipa:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Capacitor
+        run: npm ci
+
+      - name: Assemble web assets (offline bundle)
+        run: bash scripts/prepare-www.sh
+
+      - name: Sync Capacitor iOS project
+        run: npx cap sync ios
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Archive (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            archive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" | tee "$RUNNER_TEMP/xcodebuild.log" | grep -E "error:|warning: .*deprecated|\*\* ARCHIVE" || true
+          test -d "$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app"
+
+      - name: Package WorkoutLogbook.ipa
+        run: |
+          rm -rf Payload WorkoutLogbook.ipa
+          mkdir Payload
+          cp -R "$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app" Payload/
+          zip -qry WorkoutLogbook.ipa Payload
+          unzip -l WorkoutLogbook.ipa | grep -E "App.app/(Info.plist|App$|public/index.html|public/app.js)"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" Payload/App.app/Info.plist
+          /usr/libexec/PlistBuddy -c "Print :CFBundleDisplayName" Payload/App.app/Info.plist
+          ls -la WorkoutLogbook.ipa
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: ${{ runner.temp }}/xcodebuild.log
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WorkoutLogbook-ipa
+          path: WorkoutLogbook.ipa
+
+      - name: Publish pre-release ios-v1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view ios-v1 >/dev/null 2>&1; then
+            gh release create ios-v1 \
+              --prerelease \
+              --target "$GITHUB_SHA" \
+              --title "Workout Logbook iOS (unsigned IPA)" \
+              --notes "Unsigned IPA for SideStore / AltStore / SideInstaller. They re-sign it with your Apple ID. Bundle ID: com.rico.workoutlogbook. Built from ${GITHUB_SHA}."
+          fi
+          gh release upload ios-v1 WorkoutLogbook.ipa --clobber
+          echo "Download: https://github.com/${GITHUB_REPOSITORY}/releases/download/ios-v1/WorkoutLogbook.ipa"
