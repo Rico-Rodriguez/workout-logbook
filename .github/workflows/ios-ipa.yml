@@ -2,7 +2,8 @@ name: Build iOS IPA
 
 on:
   push:
-    branches: [ios-build]
+    branches:
+      - cursor/ios-unsigned-ipa-bdc2
   workflow_dispatch:
 
 permissions:
@@ -33,12 +34,15 @@ jobs:
       - name: Sync Capacitor iOS project
         run: npx cap sync ios
 
-      - name: Show Xcode version
-        run: xcodebuild -version
+      - name: Select Xcode 16.4
+        run: |
+          sudo xcode-select -s /Applications/Xcode_16.4.app
+          xcodebuild -version
 
       - name: Archive (unsigned)
         run: |
           set -o pipefail
+          set +e
           xcodebuild \
             -project ios/App/App.xcodeproj \
             -scheme App \
@@ -51,14 +55,32 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            DEVELOPMENT_TEAM="" | tee "$RUNNER_TEMP/xcodebuild.log" | grep -E "error:|warning: .*deprecated|\*\* ARCHIVE" || true
-          test -d "$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app"
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            VALIDATE_PRODUCT=NO | tee "$RUNNER_TEMP/xcodebuild.log" | grep -E "error:|warning: .*deprecated|\*\* ARCHIVE"
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ] || [ ! -d "$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app" ]; then
+            echo "==== xcodebuild failed (status $status) ===="
+            grep -E "error:" "$RUNNER_TEMP/xcodebuild.log" | tail -120 || true
+            exit 1
+          fi
 
       - name: Package WorkoutLogbook.ipa
         run: |
           rm -rf Payload WorkoutLogbook.ipa
           mkdir Payload
           cp -R "$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app" Payload/
+          # Xcode sometimes ad-hoc signs even when signing is disabled. Strip it
+          # so SideInstaller receives an unsigned bundle.
+          codesign --remove-signature Payload/App.app || true
+          if [ -d Payload/App.app/Frameworks ]; then
+            find Payload/App.app/Frameworks -name '*.framework' -o -name '*.dylib' | while read -r bin; do
+              codesign --remove-signature "$bin" || true
+            done
+          fi
+          codesign -dv Payload/App.app 2>&1 || true
           zip -qry WorkoutLogbook.ipa Payload
           unzip -l WorkoutLogbook.ipa | grep -E "App.app/(Info.plist|App$|public/index.html|public/app.js)"
           /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" Payload/App.app/Info.plist
