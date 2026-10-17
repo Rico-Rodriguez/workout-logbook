@@ -62,6 +62,15 @@
     input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     .safe-top { padding-top: max(env(safe-area-inset-top), 16px); }
     .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 18px); }
+    .app-pad { padding-bottom: calc(7.75rem + env(safe-area-inset-bottom, 0px)) !important; }
+    #day-tabs { padding-top: 4px; padding-bottom: 6px; }
+    #floating-rest-pill {
+      top: calc(env(safe-area-inset-top, 0px) + 8.75rem);
+      transform: translate(-50%, calc(-120% - env(safe-area-inset-top, 0px)));
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    #floating-rest-pill.is-shown { transform: translate(-50%, 0); }
+    input, textarea { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 9rem); scroll-margin-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .tactile-btn { transition: all 0.12s cubic-bezier(0.2, 0, 0, 1); }
@@ -81,9 +90,9 @@
     input:checked + .cozy-slider:before { transform: translateX(18px); }
   </style>
 </head>
-<body class="bg-canvas text-ink font-sans min-h-screen pb-28 antialiased selection:bg-terracottaSoft selection:text-terracotta">
+<body class="app-pad bg-canvas text-ink font-sans min-h-screen antialiased selection:bg-terracottaSoft selection:text-terracotta">
 
-  <aside id="floating-rest-pill" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-xs transition-all duration-300 transform -translate-y-20 opacity-0 pointer-events-none">
+  <aside id="floating-rest-pill" class="fixed left-1/2 z-50 w-[90%] max-w-xs opacity-0 pointer-events-none">
     <div class="bg-surface/95 backdrop-blur-md border border-borderWarm rounded-full px-4 py-2 shadow-floating flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <span class="w-2 h-2 rounded-full bg-periwinkle animate-pulse"></span>
@@ -110,7 +119,7 @@
           <span class="text-[10px] text-inkFaint">lbs</span>
         </button>
       </div>
-      <nav class="mt-2 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar py-0.5" id="day-tabs"></nav>
+      <nav class="mt-2 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar" id="day-tabs"></nav>
     </div>
   </header>
 

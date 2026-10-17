@@ -8,6 +8,7 @@
     "scrollEnabled": true
   },
   "plugins": {
-    "StatusBar": { "style": "LIGHT", "overlaysWebView": true }
+    "StatusBar": { "style": "LIGHT", "overlaysWebView": true },
+    "Keyboard": { "resize": "native", "resizeOnFullScreen": true }
   }
 }

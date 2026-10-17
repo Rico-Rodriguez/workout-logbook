@@ -4,11 +4,16 @@
   "version": "1.0.0",
   "scripts": {},
   "dependencies": {
+    "@capacitor/clipboard": "^7.0.4",
     "@capacitor/core": "^7.4.0",
     "@capacitor/filesystem": "^7.1.9",
+    "@capacitor/haptics": "^7.0.5",
     "@capacitor/ios": "^7.4.0",
+    "@capacitor/keyboard": "^7.0.6",
+    "@capacitor/local-notifications": "^7.0.7",
     "@capacitor/share": "^7.0.4",
-    "@capacitor/status-bar": "^7.0.0"
+    "@capacitor/status-bar": "^7.0.0",
+    "native-kit": "file:native-kit"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

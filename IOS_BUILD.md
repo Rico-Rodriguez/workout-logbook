@@ -11,5 +11,5 @@ Open it in SideStore / AltStore / SideInstaller, which re-sign it with your Appl
 
 - Bundle ID: com.rico.workoutlogbook. Display name: Workout Logbook
 - Tailwind (Play CDN 3.4.17) and Tone.js 14.8.49 are vendored in ios-web/vendor so the app runs offline
-- ios-web/native-shim.js makes "Export backup" open the iOS share sheet (WKWebView ignores <a download>)
+- ios-web/native-shim.js makes "Export backup" open the iOS share sheet (WKWebView ignores <a download>), plays haptics, keeps the screen awake during timers, and schedules a local notification when rest ends
 - To pick up changes from main: merge main into this branch and push
