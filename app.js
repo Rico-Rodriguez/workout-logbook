@@ -617,13 +617,13 @@ function renderCurrentWorkout() {
           isDone ? 'bg-sageSoft/70 border-sage/30' : 'bg-surfaceWarm/60 border-borderSubtle'
         }">
           <span class="col-span-2 text-xs font-semibold ${isDone ? 'text-sage' : 'text-inkMuted'}">#${idx + 1}</span>
-          <div class="col-span-5 flex justify-center">
-            <input type="number" placeholder="—" value="${set.weight}" onchange="updateSetVal('${ex.id}', ${idx}, 'weight', this.value)"
-              class="w-16 bg-surface text-center font-bold text-ink py-1 rounded-xl border border-borderWarm outline-none focus:border-terracotta text-sm">
+          <div class="col-span-5 min-w-0 flex justify-center">
+            <input type="number" inputmode="decimal" placeholder="—" value="${set.weight}" onchange="updateSetVal('${ex.id}', ${idx}, 'weight', this.value)"
+              class="w-full min-w-0 bg-surface text-center font-bold text-ink py-1.5 rounded-xl border border-borderWarm outline-none focus:border-terracotta tabular-nums">
           </div>
-          <div class="col-span-3 flex justify-center">
-            <input type="number" value="${set.reps}" onchange="updateSetVal('${ex.id}', ${idx}, 'reps', this.value)"
-              class="w-12 bg-surface text-center font-bold text-ink py-1 rounded-xl border border-borderWarm outline-none focus:border-terracotta text-sm">
+          <div class="col-span-3 min-w-0 flex justify-center">
+            <input type="number" inputmode="numeric" value="${set.reps}" onchange="updateSetVal('${ex.id}', ${idx}, 'reps', this.value)"
+              class="w-full min-w-0 bg-surface text-center font-bold text-ink py-1.5 rounded-xl border border-borderWarm outline-none focus:border-terracotta tabular-nums">
           </div>
           <div class="col-span-2 flex justify-end">
             <button onclick="toggleSetDone('${ex.id}', ${idx})" class="tactile-btn w-7 h-7 rounded-xl flex items-center justify-center border transition-all ${
@@ -960,14 +960,14 @@ function syncTimerDisplays() {
 
 function showRestPill() {
   const pill = document.getElementById('floating-rest-pill');
-  pill.classList.remove('-translate-y-20', 'opacity-0', 'pointer-events-none');
-  pill.classList.add('translate-y-0', 'opacity-100');
+  pill.classList.add('is-shown');
+  pill.classList.remove('opacity-0', 'pointer-events-none');
 }
 
 function dismissRestPill() {
   const pill = document.getElementById('floating-rest-pill');
-  pill.classList.add('-translate-y-20', 'opacity-0', 'pointer-events-none');
-  pill.classList.remove('translate-y-0', 'opacity-100');
+  pill.classList.remove('is-shown');
+  pill.classList.add('opacity-0', 'pointer-events-none');
 }
 
 function toggleRest() {

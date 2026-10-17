@@ -1,0 +1,11 @@
+{
+  "name": "native-kit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Small Capacitor plugin for workout-logbook iOS behaviors.",
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    }
+  }
+}
